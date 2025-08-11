@@ -1,55 +1,50 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
-struct Point {
-    int coordinate;
-    bool is_start;
+using namespace std;
+struct Point{
+	int coords;
+	bool is_start;
 };
-
-// Custom comparator for sorting points
-bool comparePoints(const Point& a, const Point& b) {
-    if (a.coordinate != b.coordinate) {
-        return a.coordinate < b.coordinate;
-    }
-    // If coordinates are the same, starting points come first
-    return a.is_start > b.is_start;
+bool customSort(const Point& a, const Point&b){
+	if(a.coords != b.coords){
+		return a.coords < b.coords;
+	}
+	return a.is_start > b.is_start;
 }
+int klee_algorithm(const vector<pair<int, int>>& line){
+	int result{}, Counter{};
+	// for loop x.first and add it in with 1, x.second with 2
+	// make a struct that makes life easier
+	vector<Point> points;
+	for(const auto& x : line){
+		points.push_back({x.first, true});
+		points.push_back({x.second, false});
+	}
+	sort(points.begin(), points.end(), customSort);
+	/*
+	for(const auto&x : points){
+		cout << x.coords << ' ' << x.is_start << "\n";
+	}*/
+	for(unsigned int i{}; i < 2*points.size(); i++){
+		if(Counter && i >0){
+			result += (points[i].coords - points[i-1].coords);
+		}
+		(points[i].is_start)? Counter++ : Counter--;
+	}
 
-int klee_algorithm(const std::vector<std::pair<int, int>>& segments) {
-    std::vector<Point> points;
-    for (const auto& segment : segments) {
-        points.push_back({segment.first, true});
-        points.push_back({segment.second, false});
-    }
-
-    // Sort the points
-    std::sort(points.begin(), points.end(), comparePoints);
-
-    int total_length = 0;
-    int counter = 0;
-
-    for (size_t i = 0; i < points.size(); ++i) {
-        if (i > 0 && counter > 0) {
-            total_length += points[i].coordinate - points[i - 1].coordinate;
-        }
-
-        if (points[i].is_start) {
-            counter++;
-        } else {
-            counter--;
-        }
-    }
-
-    return total_length;
+	return result;
 }
-
-int main() {
-    std::vector<std::pair<int, int>> segments1 = {{1, 6}, {4, 5}, {3, 8}, {7, 9}};
-    std::cout << "Length of union for segments1: " << klee_algorithm(segments1) << std::endl;
-
-    std::vector<std::pair<int, int>> segments2 = {{1, 3}, {2, 5}, {5, 6}};
-    std::cout << "Length of union for segments2: " << klee_algorithm(segments2) << std::endl;
-
-    return 0;
+vector<<pair<int, int>> take_input(){
+	vector<pair<int, int>> line;
+	cout << "Enter coordinates: (Example: 1 3)\n";
+	int x,y; cin >> x >> y;
+	line.push_back({x, y});
+	return line;
+}
+int main(){
+	// {{1, 6}, {4, 5}, {3, 8}, {7, 9}}
+	// {{1, 3}, {2, 5}, {5, 6}}
+	vector<pair<int, int>> line1 = take_input();
+	cout << "Length of segment is: " << klee_algorithm(line1) << "\n";
 }
